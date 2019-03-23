@@ -1,0 +1,40 @@
+{
+  "scripts": {
+    "lint:eslint": "eslint --ext .js,.html .",
+    "format:eslint": "eslint --ext .js,.html . --fix",
+    "lint:prettier": "prettier \"**/*.js\" --list-different || (echo '↑↑ these files are not prettier formatted ↑↑' && exit 1)",
+    "format:prettier": "prettier \"**/*.js\" --write",
+    "lint": "npm run lint:eslint && npm run lint:prettier",
+    "lint:types": "tsc",
+    "format": "npm run format:eslint && npm run format:prettier",
+    "test": "karma start",
+    "test:watch": "karma start --auto-watch=true --single-run=false",
+    "start": "owc-dev-server --open ./src"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^7.0.0",
+    "@commitlint/config-conventional": "^7.0.0",
+    "@open-wc/eslint-config": "^0.4.0",
+    "@open-wc/prettier-config": "^0.1.0",
+    "@open-wc/testing": "^0.10.0",
+    "@open-wc/testing-karma": "^0.4.0",
+    "husky": "^1.0.0",
+    "lint-staged": "^8.0.0",
+    "owc-dev-server": "^0.3.0",
+    "webpack-merge": "^4.1.5"
+  },
+  "lint-staged": {
+    "*.js": [
+      "eslint --fix",
+      "prettier --write",
+      "git add"
+    ]
+  },
+  "name": "title-bar",
+  "license": "MIT",
+  "dependencies": {
+    "lit-element": "^2.0.1",
+    "lit-html": "^1.0.0",
+    "typescript": "^3.3.4000"
+  }
+}
