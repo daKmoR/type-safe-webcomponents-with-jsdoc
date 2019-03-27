@@ -390,7 +390,7 @@ format(value, { prefix, suffix = '' } = { prefix: '' }) {
 
 ### Importing Types across files
 
-Files never life in isolation so there will come the point where you want to use a type within another location.
+Files never live in isolation so there might come a point where you want to use a type within another location.
 Let's take our good old friend the ToDo List as an example.
 You will have `todo-item.js` & `todo-list.js`.
 
@@ -428,7 +428,7 @@ Let's assume the following structure:
 </todo-list>
 ```
 
-and we would like to calculate some staticistis.
+and we would like to calculate some statistics.
 
 ```js
 calculateStats() {
@@ -448,7 +448,7 @@ calculateStats() {
 ```
 
 The above code actually has an error in it :scream:
-`item.prio` does not exists. Types could have saved as but how?
+`item.prio` does not exists. Types could have saved us here, but how?
 
 First let's import the type
 ```js
@@ -494,9 +494,9 @@ return html`
 `;
 ```
 
-How can we make this type save?
+How can we make this type safe?
 
-Casting it via `@type {ToDoItem[]}` does not really work out :sob:
+Unfortunately, simply casting it via `@type {ToDoItem[]}` does not really work out :sob:
 
 ![ElementAsObjectFail](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/ElementAsObjectFail.png)
 
@@ -538,7 +538,7 @@ constructor() {
 }
 ```
 
-And :tada: type safety for web component AND it's data.
+And :tada: type safety for web component AND its data.
 
 ![ItemDataTypeErrors](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/ItemDataTypeErrors.png)
 
