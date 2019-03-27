@@ -1,7 +1,7 @@
 ---
 title: Type safe web components with JSDoc
 published: false
-description:
+description: Provide the best developer experience by showing awesome intellisense and adding types to your web components.
 tags: webcomponents, javascript, type, openwc
 ---
 
@@ -29,11 +29,15 @@ So in order to talk about this, we need to do some broader generalizations. So l
 2. **General documentation**: should show the big picture between all the features => needs to be written by hand hopefully in markdown so it can serve on github/npmjs and can be used to auto-generate a nice looking docs webpage.
 3. **API documentation**: should be close to the code?
 
-
 We will now only focus on API documentation. Also we will be assuming the editor in use is VS Code.
 
 Let's get started with a very simple web component.
 
+If you wanna play along - all the code is on [github](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc).
+
+### <title-bar>
+
+![title-bar](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/title-bar.png)
 
 ```html
 <title-bar>
@@ -384,6 +388,161 @@ format(value, { prefix, suffix = '' } = { prefix: '' }) {
 
 ![intellisenseFormatTypedJsDocExtraAllOptions](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/intellisenseFormatTypedJsDocExtraAllOptions.png)
 
+### Importing Types across files
+
+Files never life in isolation so there will come the point where you want to use a type within another location.
+Let's take our good old friend the ToDo List as an example.
+You will have `todo-item.js` & `todo-list.js`.
+
+The item will have a constructor like this.
+
+```js
+constructor() {
+  super();
+  /**
+   * What you need to do
+   */
+  this.label = '';
+
+  /**
+   * How important is it? 1-10
+   *
+   * 1 = less important; 10 = very important
+   */
+  this.priority = 1;
+
+  /**
+   * Is this task done already?
+   */
+  this.done = false;
+}
+```
+
+So how can I reuse those type in `todo-list.js`.
+
+Let's assume the following structure:
+```html
+<todo-list>
+  <todo-item .label=${One} .priority=${5} .done=${true}></todo-item>
+  <todo-item .label=${Two} .priority=${8} .done=${false}></todo-item>
+</todo-list>
+```
+
+and we would like to calculate some staticistis.
+
+```js
+calculateStats() {
+  const items = Array.from(
+    this.querySelectorAll('todo-item'),
+  );
+
+  let doneCounter = 0;
+  let prioritySum = 0;
+  items.forEach(item => {
+    doneCounter += item.done ? 1 : 0;
+    prioritySum += item.prio;
+  });
+  console.log('Done tasks', doneCounter);
+  console.log('Average priority', prioritySum / items.length);
+}
+```
+
+The above code actually has an error in it :scream:
+`item.prio` does not exists. Types could have saved as but how?
+
+First let's import the type
+```js
+/**
+ * @typedef {import('./todo-item.js').ToDoItem} ToDoItem
+ */
+```
+
+and then we type cast it.
+
+```js
+const items = /** @type {ToDoItem[]} */ (Array.from(
+  this.querySelectorAll('todo-item'),
+));
+```
+
+And there we already see the type error :muscle:
+
+![importCast](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/importCast.png)
+
+### Use Data Objects to create Custom Elements
+
+In most cases we do not only want to access an existing DOM and type cast the result but we would like to actually render those elements from a data array.
+
+Here is the example array
+```js
+this.dataItems = [
+  { label: 'Item 1', priority: 5, done: false },
+  { label: 'Item 2', priority: 2, done: true },
+  { label: 'Item 3', priority: 7, done: false },
+];
+```
+
+and then we render it
+
+```js
+return html`
+  ${this.dataItems.map(
+    item => html`
+      <todo-item .label=${item.label} .priority=${item.priority} .done=${item.done}></todo-item>
+    `,
+  )}
+`;
+```
+
+How can we make this type save?
+
+Casting it via `@type {ToDoItem[]}` does not really work out :sob:
+
+![ElementAsObjectFail](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/ElementAsObjectFail.png)
+
+It expects the object to be a full representation of an HTMLElement and of course our little 3 property object does miss quite some properties there.
+
+What we can do is to have a `Data Representation` of our web component. e.g. define what is needed to create such an element in the dom.
+
+```js
+/**
+ * Object Data representation of ToDoItem
+ *
+ * @typedef {Object} ToDoItemData
+ * @property {string} label
+ * @property {number} priority
+ * @property {Boolean} done
+ */
+```
+
+We can then import and type cast it
+
+```js
+/**
+ * @typedef {import('./todo-item.js').ToDoItemData} ToDoItemData
+ * @typedef {import('./todo-item.js').ToDoItem} ToDoItem
+ */
+
+// [...]
+
+constructor() {
+  super();
+  /**
+   * @type {ToDoItemData[]}
+   */
+  this.dataItems = [
+    { label: 'Item 1', priority: 5, done: false },
+    { label: 'Item 2', priority: 2, done: true },
+    { label: 'Item 3', priority: 7, done: false },
+  ];
+}
+```
+
+And :tada: type safety for web component AND it's data.
+
+![ItemDataTypeErrors](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/ItemDataTypeErrors.png)
+
+
 ## Let your users consume your types
 
 One thing that is a little tougher if you have types not as definition files is how you can make them available.
@@ -430,11 +589,19 @@ Equipped with these options for properties/functions you should be fine for most
 - Make sure to type cast your dom results
 - Add type linting via console/continuous integration to make sure they are correct
 - Inform your users how they can consume your types
+- Bookmark the [Typescript JSDoc Reference](https://github.com/Microsoft/TypeScript/wiki/JSDoc-support-in-JavaScript)
 
-If you need more information on additional JSDoc features for types take a look at [Type Safe JavaScript with JSDoc](https://medium.com/@trukrs/type-safe-javascript-with-jsdoc-7a2a63209b76).
+If you need more information on additional JSDoc features for types take a look at [Type Safe JavaScript with JSDoc](https://medium.com/@trukrs/type-safe-javascript-with-jsdoc-7a2a63209b76). I highly recommend reading it!
 
 The full code can be found on [github](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc).
 To see how your users will get it look at the [tests](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/blob/master/test/title-bar.test.js).
+
+
+## What's next?
+
+These are steps that can help make web components simpler and saver to use.
+Not everything here is useful for every situation and there will be definitly situation where we don't have a recipe yet.
+If you encouter any issues (hopefully + solution) please let us know and we will add it to this "Cookbook for types with web components".
 
 Follow me on [Twitter](https://twitter.com/daKmoR).
 If you have any interest in web component make sure to check out [open-wc.org](https://open-wc.org).
