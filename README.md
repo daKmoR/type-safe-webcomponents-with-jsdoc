@@ -7,9 +7,20 @@ tags: webcomponents, javascript, type, openwc
 
 Writing code is tough and writing it in a way that makes sense to others (or your future self) is even tougher. That's why documentation is a very important part of every software project.
 
-And honestly what you really want is a powerful autocomplete - which you can get by having proper types.
+I'm sure we've all found ourselves in the following situation: You're happily coding and just found a nice library that can help you, so you start using it...
 
-So let's get started with a very simple web component.
+```js
+import foo from 'foo-lib';
+
+foo.doTheThing(//...
+```
+But, did `foo.doTheThing()` take a string first and then the number or the other way around?
+
+So you head over to http://foo-lib.org and about 5 clicks later you get to the function signature and find out how to use it. First of all, you're already lucky as not many libraries have good documentation :scream:
+
+However it already painfully shows that the information is not as close to your workflow as it should be. You have to stop coding and search for the info while it could be directly in your editor. :blush:
+
+So we can definitely do better :hugs: Let's get started with a very simple web component.
 
 **Note**: We will be assuming the editor in use is VS Code.
 
