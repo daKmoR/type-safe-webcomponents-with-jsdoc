@@ -1,41 +1,21 @@
 ---
-title: Type safe web components with JSDoc
+title: Type-Safe Web Components with JSDoc
 published: false
 description: Provide the best developer experience by showing awesome intellisense and adding types to your web components.
 tags: webcomponents, javascript, type, openwc
 ---
 
-Writing code is tough and writing it in a way that makes sense to others (or your future self) is even tougher. That's the reason why documentation is a very important part of every software project.
+Writing code is tough and writing it in a way that makes sense to others (or your future self) is even tougher. That's why documentation is a very important part of every software project.
 
-I'm sure we've all found ourselves in the following situation: You're happily coding and just found a nice library that can help you, so you start using it...
+And honestly what you really want is a powerful autocomplete - which you can get by having proper types.
 
-```js
-import foo from 'foo-lib';
+So let's get started with a very simple web component.
 
-foo.doTheThing(//...
-```
-But, did `foo` take a string first and then the number or the other way around?
-
-So you head over to http://foo-lib.org and about 5 clicks later you get to the function signature and find out how to use it.
-
-First of all, you're already lucky as not many libraries have good documentation :scream:
-
-However it already painfully shows that the information is not as close to your workflow as it should be. You have to stop coding and search for the info while it could be directly in your editor. :blush:
-
-Don't get me wrong here — not all documentation should be right in there — that would just be too much. This, however, brings us to another complicated matter and that is that documentation usually has to cover a huge amount of different users (with vastly different skills and backgrounds) and levels of programming detail.
-
-So in order to talk about this, we need to do some broader generalizations. So let's split documentation into a couple of different categories:
-1. **Landing page documentation**: used to spark initial interest in people => needs to be handmade (written, designed and implemented)
-2. **General documentation**: should show the big picture between all the features => needs to be written by hand hopefully in markdown so it can serve on github/npmjs and can be used to auto-generate a nice looking docs webpage.
-3. **API documentation**: should be close to the code?
-
-We will now only focus on API documentation. Also we will be assuming the editor in use is VS Code.
-
-Let's get started with a very simple web component.
+**Note**: We will be assuming the editor in use is VS Code.
 
 If you wanna play along - all the code is on [github](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc).
 
-### <title-bar>
+### \<title-bar\>
 
 ![title-bar](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/title-bar.png)
 
@@ -43,7 +23,7 @@ If you wanna play along - all the code is on [github](https://github.com/daKmoR/
 <title-bar>
   #shadow-root (open)
     <h1>You are awesome</h1>
-    <div class="dot" style="left: 0px; top: 0" title="I am dot"></div>
+    <div class="dot" style="left: 0px; top: 0px" title="I am dot"></div>
 </title-bar>
 ```
 
@@ -101,13 +81,16 @@ export class TitleBar extends LitElement {
 customElements.define('title-bar', TitleBar);
 ```
 
-Now if we or our users start using this component our editor already knows a lot of information, however we don't utilize it yet.
+### What you get when you use it
+
+Let's query our newly created element. :blush:
 
 ```js
 const el = document.querySelector('title-bar');
 ```
 
-Here our editor can't know what `el` actually is so there is no way it can help us in writing better code. That means no code completion for our own properties even though that information is available.
+Here our editor can't know what `el` actually is so there is no way it can help us in writing better code.
+That means no code completion for our own properties even though that information is available.
 
 ![autoCompleteMissing](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/autoCompleteMissing.png)
 
@@ -127,7 +110,6 @@ el.foo = 'bar';
 el.title = true;
 ```
 and nobody will complain.
-
 
 Let's change that :muscle:
 
@@ -214,8 +196,9 @@ constructor() {
 So just by defining your initial values within the constructor most of your types should be good to go. :+1:
 (Dont worry — I did not forget formatter, we'll get to it shortly)
 
+Types are already awesome but we can do even better.
 
-Types are already awesome but we can do even better. Look at the intellisense in VS Code.
+### Look at the intellisense in VS Code.
 
 ![intellisenseTitleTyped](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/intellisenseTitleTyped.png)
 
@@ -246,7 +229,10 @@ much better :blush:
 
 **Note**: You do not need to add the `@type` here as it's clear that it's a string and if you add it - it may get out of sync at some point.
 
-Now if we look at
+### Manually set types
+
+If we look at
+
 ```js
 this.formatter = null;
 ```
@@ -286,6 +272,8 @@ el.formatter = false;
 Also the immediately appearing `@example` really makes it easy to create your own formatter.
 
 ![intellisenseFormatterTypedJsDoc](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/intellisenseFormatterTypedJsDoc.png)
+
+### Setup your own types and use them
 
 There is one more property that doesn't look too nice yet, and that is the `bar` property.
 

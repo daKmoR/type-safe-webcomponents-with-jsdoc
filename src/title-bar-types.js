@@ -68,7 +68,7 @@ export class TitleBarTypes extends LitElement {
       <h1>${this.format(this.title, { prefix: '' })}</h1>
       <div
         class="dot"
-        style=${`left: ${this.bar.x}px; top: ${this.bar.y}`}
+        style=${`left: ${this.bar.x}px; top: ${this.bar.y}px`}
         title=${this.bar.title ? this.bar.title : ''}
       ></div>
     `;
