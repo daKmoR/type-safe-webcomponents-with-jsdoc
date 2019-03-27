@@ -5,26 +5,26 @@ description:
 tags: webcomponents, javascript, type, openwc
 ---
 
-Writing code is tough and writing it in a way that makes sense to others (or yourself in 3 weeks) is even tougher. That's probably the reason why documentation is a very important part of every software project.
+Writing code is tough and writing it in a way that makes sense to others (or your future self) is even tougher. That's the reason why documentation is a very important part of every software project.
 
-I'm pretty sure you can relate to this situation. I'm happily coding and I just found a nice library that can help me with it so you import it.
+I'm sure we've all found ourselves in the following situation: You're happily coding and just found a nice library that can help you, so you start using it...
 
 ```js
 import foo from 'foo-lib';
 
 foo.doTheThing(//...
 ```
-was it a string first and then the number or the other way around?
+But, did `foo` take a string first and then the number or the other way around?
 
-So you head over to http://foo-lib.org and about 5 clicks late you get to the function signiture and find out how to use it.
+So you head over to http://foo-lib.org and about 5 clicks later you get to the function signature and find out how to use it.
 
-First of you are already lucky as not many libraries have good documentation :scream:
+First of all, you're already lucky as not many libraries have good documentation :scream:
 
 However it already painfully shows that the information is not as close to your workflow as it should be. You have to stop coding and search for the info while it could be directly in your editor. :blush:
 
-Don't get me wrong not every documentation should be right in there - that would just be too much. So we are getting to into another complicated matter and that is that documentation usually has to cover a huge amount of different users (with vastly different skills and backgrounds) and levels of programming detail.
+Don't get me wrong here — not all documentation should be right in there — that would just be too much. This, however, brings us to another complicated matter and that is that documentation usually has to cover a huge amount of different users (with vastly different skills and backgrounds) and levels of programming detail.
 
-So in order that we can talk about this here we need to do some broader generalizations. So we will split documentation into different categories
+So in order to talk about this, we need to do some broader generalizations. So let's split documentation into a couple of different categories:
 1. **Landing page documentation**: used to spark initial interest in people => needs to be handmade (written, designed and implemented)
 2. **General documentation**: should show the big picture between all the features => needs to be written by hand hopefully in markdown so it can serve on github/npmjs and can be used to auto-generate a nice looking docs webpage.
 3. **API documentation**: should be close to the code?
@@ -44,14 +44,14 @@ Let's get started with a very simple web component.
 ```
 
 It's just a little box with a
-- title
-- darkMode
+- title property
+- darkMode property/attribute
 - formatter function
-- bar on the left
+- a sidebar property on the left
 
 We will use LitElement to create it.
 
-**Note**: We use JavaScript here - but for the most part (exept for the type casting & definitions) it would be the same for TypeScript.
+**Note**: We use JavaScript here - but for the most part (exept for the type casting & definitions) the example would be the same for TypeScript.
 
 ```js
 import { LitElement, html, css } from 'lit-element';
@@ -86,18 +86,18 @@ export class TitleBar extends LitElement {
   }
 
   format(value) {
-    // not relevant now
+    // we'll get to this later
   }
 
   static get styles() {
-    // not relevant now
+    // we'll get to this later
   }
 }
 
 customElements.define('title-bar', TitleBar);
 ```
 
-Now if we or our users start using this component our editor already knows a lot of information however it's not utalized.
+Now if we or our users start using this component our editor already knows a lot of information, however we don't utilize it yet.
 
 ```js
 const el = document.querySelector('title-bar');
@@ -107,7 +107,7 @@ Here our editor can't know what `el` actually is so there is no way it can help 
 
 ![autoCompleteMissing](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/autoCompleteMissing.png)
 
-What we need to do is cast it.
+So what we need to do is cast it:
 
 ```js
 const el = /** @type {TitleBar} */ (document.querySelector('title-bar'));
@@ -162,36 +162,36 @@ Property 'foo' does not exist on type 'TitleBar'.
 Type 'true' is not assignable to type 'string'.
 ```
 
-You can even even go further by doing the linting in the console and your continous integration.
+You can even even go further by doing the linting in the console and your continuous integration.
 
-All you need to do is
+All you need to do is:
 ```bash
 npm i -D typescript
 ```
-Add this to you package.json
+And add this script to you package.json
 ```json
   "scripts": {
     "lint:types": "tsc"
   }
 ```
-And execute it via
+Then we can execute it as:
 ```
 npm run lint:types
 ```
 
-That will give you the same error as above but with filepath and line number.
+This will give you the same error as above but with a filepath and line number.
 
-So just by doing these few extra things your IDE can help you to stay type save.
+So just by doing these few extra things your IDE can help you to stay type safe.
 
-Honestly it will not be a gentile reminder - those red curly lines are hard to ignore and if you need an extra motivation you can hit F8 which will just throw the next error in your face :p.
+Honestly it will not be a gentle reminder - those red curly lines are hard to ignore and if you need some extra motivation you can hit F8 which will just throw the next error in your face :p.
 
 ![showTypeErrors](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/showTypeErrors.png)
 
 ## How does it work?
 
-If you are like me you are probably wondering how does it know what properties are of which type? I certainly did not define any types.
+If you are like me you are probably wondering how does it know what properties are of which type? I certainly did not define any types yet!
 
-Typescript can make a lot of assumptions based on your es6 code. The actual magic lays in the constructor.
+Typescript can make a lot of assumptions based on your ES6 code. The actual magic lays in the constructor:
 
 ```js
 constructor() {
@@ -208,14 +208,14 @@ constructor() {
 - bar an object with x, y as number and title a string
 
 So just by defining your initial values within the constructor most of your types should be good to go. :+1:
-(I did not forget formatter - we will adress it later)
+(Dont worry — I did not forget formatter, we'll get to it shortly)
 
 
-I mean types are already awesome but we can do even better. Look at the intellisense in VS Code.
+Types are already awesome but we can do even better. Look at the intellisense in VS Code.
 
 ![intellisenseTitleTyped](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/intellisenseTitleTyped.png)
 
-really minimal... let's add some JSDoc.
+Currently it's really minimal... So let's add some JSDoc:
 
 ```js
 /**
@@ -247,22 +247,22 @@ Now if we look at
 this.formatter = null;
 ```
 
-There is now way to see from this line what that property will hold.
+There is no way to see from this line alone what the property will hold.
 You could assign an empty/default function like
 ```js
 this.formatter = value => `${value}`;
 ```
-but that does not make sense in all case.
+but this does not make sense in all case.
 In our example we would like to skip the formatting if there is no formatter function.
 Having a default function would defeat it's purpose.
-In these cases it's mandatory to provide a `@type` and you can do so via a JSDoc.
+In these cases it's mandatory to provide a `@type` and you can do so using JSDoc.
 
 ```js
 /**
  * You can provide a specific formatter that will change the way the title
- * get's displayed.
+ * gets displayed.
  *
- * *Note*: Changeing the formatter does NOT trigger a rerender.
+ * *Note*: Changing the formatter does NOT trigger a rerender.
  *
  * @example
  * el.formatter = (value) => `${value} for real!`;
@@ -279,30 +279,30 @@ el.formatter = false;
 // Type 'false' is not assignable to type 'Function'.
 ```
 
-Also the directly shown example really makes it way easier to create your own formatter.
+Also the immediately appearing `@example` really makes it easy to create your own formatter.
 
 ![intellisenseFormatterTypedJsDoc](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/intellisenseFormatterTypedJsDoc.png)
 
-There is one more property which does not look too nice and that is the bar.
+There is one more property that doesn't look too nice yet, and that is the `bar` property.
 
 ![intellisenseBarTyped](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/intellisenseBarTyped.png)
 
-I mean type safetly already works which is great but you only know that x is a number there is no additional info.
-That can be improved with JSDocs as well.
+Our type safety already works here, which is great, but we only know that x is a number; there is no additional info.
+We can improve this with JSDocs as well.
 
 So we define a special type called `Bar`.
 ```js
 /**
- * This is an visible bar that gets displayed at the appropriate coordinates.
+ * This is a visible bar that gets displayed at the appropriate coordinates.
  * It has a height of 100%. An optional title can be provided.
  *
  * @typedef {Object} Bar
  * @property {number} x The distance from the left
  * @property {number} y The distance from the top
- * @property {string} [title] Optional title that will set as an attribute (defaults to '')
+ * @property {string} [title] Optional title that will be set as an attribute (defaults to '')
  */
 ```
-Doing so we can also define certain properties as optional.
+Doing so we can also define certain properties as being optional.
 The only thing we need to do then is to assign it.
 
 ```js
@@ -318,7 +318,7 @@ this.bar = { x: 0, y: 0, title: 'I am dot' };
 
 Let's create a simple format function which will allow for prefix/suffix by default and if you need more you can just override the `formatter`.
 
-*not a super useful example but good for illustration perposes*
+*Note: this is not a super useful example but good enough for illustration purposes*
 
 ```js
 format(value = '', { prefix, suffix = '' } = { prefix: '' }) {
@@ -348,8 +348,8 @@ format(value = '', { prefix = '', suffix = '' } = {}) {
 
 ![intellisenseFormatTypedJsDocsOnlyDescription](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/intellisenseFormatTypedJsDocsOnlyDescription.png)
 
-Or if you want to have an onion type (e.g. allow strings AND numbers).
-Be sure to only document what you actually need as with this method you override the default types and that means they could get out of sync.
+Or if you want to have an union type (e.g. allow strings AND numbers).
+Be sure to only document what you actually need as with this method you override the default types and that means things could get out of sync.
 
 ```js
 /**
@@ -365,7 +365,7 @@ format(value, { prefix = '', suffix = '' } = {}) {
 
 ![intellisenseFormatTypedJsDoc](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/intellisenseFormatTypedJsDoc.png)
 
-If you really need to add very specific descriptions to every object options then you need to dublicate the typings.
+If you really need to add very specific descriptions to every object options then you need to duplicate the typings.
 
 ```js
 /**
@@ -422,13 +422,13 @@ You can find more details about such an approach at [Setup For Typescript on Ope
 
 
 ## Quick recap:
-Equiped with these options for properties/functions you should be fine for most web components.
+Equipped with these options for properties/functions you should be fine for most web components.
 
 - Set defaults for properties in constructor and the type will be there automatically
-- If you do not have default make sure to add `@types`
-- Add additional information/docs/examples as JSDoc for a nicer experience
+- If you do not have a default make sure to add `@types`
+- Add additional information/docs/examples as JSDoc for a nicer developer experience
 - Make sure to type cast your dom results
-- Add type linting via console/continious intergration to make sure they are correct
+- Add type linting via console/continuous integration to make sure they are correct
 - Inform your users how they can consume your types
 
 If you need more information on additional JSDoc features for types take a look at [Type Safe JavaScript with JSDoc](https://medium.com/@trukrs/type-safe-javascript-with-jsdoc-7a2a63209b76).
