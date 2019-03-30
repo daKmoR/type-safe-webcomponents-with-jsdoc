@@ -1,8 +1,8 @@
 ---
 title: Type-Safe Web Components with JSDoc
-published: false
+published: true
 description: Provide the best developer experience by showing awesome intellisense and adding types to your web components.
-tags: webcomponents, javascript, type, openwc
+tags: webcomponents, javascript, type, litelement
 ---
 
 Writing code is tough and writing it in a way that makes sense to others (or your future self) is even tougher. That's why documentation is a very important part of every software project.
@@ -46,7 +46,7 @@ It's just a little box with a
 
 We will use LitElement to create it.
 
-**Note**: We use JavaScript here - but for the most part (exept for the type casting & definitions) the example would be the same for TypeScript.
+**Note**: We use JavaScript here - but for the most part (except for the type casting & definitions) the example would be the same for TypeScript.
 
 ```js
 import { LitElement, html, css } from 'lit-element';
@@ -159,7 +159,7 @@ Property 'foo' does not exist on type 'TitleBar'.
 Type 'true' is not assignable to type 'string'.
 ```
 
-You can even even go further by doing the linting in the console and your continuous integration.
+You can even go further by doing the linting in the console and your continuous integration.
 
 All you need to do is:
 ```bash
@@ -180,7 +180,7 @@ This will give you the same error as above but with a filepath and line number.
 
 So just by doing these few extra things your IDE can help you to stay type safe.
 
-Honestly it will not be a gentle reminder - those red curly lines are hard to ignore and if you need some extra motivation you can hit F8 which will just throw the next error in your face :p.
+Honestly, it will not be a gentle reminder - those red curly lines are hard to ignore and if you need some extra motivation you can hit F8 which will just throw the next error in your face :p.
 
 ![showTypeErrors](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/showTypeErrors.png)
 
@@ -205,7 +205,7 @@ constructor() {
 - bar an object with x, y as number and title a string
 
 So just by defining your initial values within the constructor most of your types should be good to go. :+1:
-(Dont worry — I did not forget formatter, we'll get to it shortly)
+(Don't worry — I did not forget formatter, we'll get to it shortly)
 
 Types are already awesome but we can do even better.
 
@@ -254,9 +254,9 @@ You could assign an empty/default function like
 this.formatter = value => `${value}`;
 ```
 but this does not make sense in all case.
-In our example we would like to skip the formatting if there is no formatter function.
-Having a default function would defeat it's purpose.
-In these cases it's mandatory to provide a `@type` and you can do so using JSDoc.
+In our example, we would like to skip the formatting if there is no formatter function.
+Having a default function would defeat its purpose.
+In these cases, it's mandatory to provide a `@type` and you can do so using JSDoc.
 
 ```js
 /**
@@ -351,7 +351,7 @@ format(value = '', { prefix = '', suffix = '' } = {}) {
 
 ![intellisenseFormatTypedJsDocsOnlyDescription](https://github.com/daKmoR/type-safe-webcomponents-with-jsdoc/raw/master/images/intellisenseFormatTypedJsDocsOnlyDescription.png)
 
-Or if you want to have an union type (e.g. allow strings AND numbers).
+Or if you want to have a union type (e.g. allow strings AND numbers).
 Be sure to only document what you actually need as with this method you override the default types and that means things could get out of sync.
 
 ```js
@@ -470,7 +470,7 @@ And there we already see the type error :muscle:
 
 ### Use Data Objects to create Custom Elements
 
-In most cases we do not only want to access an existing DOM and type cast the result but we would like to actually render those elements from a data array.
+In most cases, we do not only want to access an existing DOM and type cast the result but we would like to actually render those elements from a data array.
 
 Here is the example array
 ```js
@@ -546,7 +546,7 @@ And :tada: type safety for web component AND its data.
 
 One thing that is a little tougher if you have types not as definition files is how you can make them available.
 
-Generally speaking you will need to ask your users to add a `tsconfig.json` like this
+Generally speaking, you will need to ask your users to add a `tsconfig.json` like this
 ```json
 {
   "compilerOptions": {
@@ -574,7 +574,9 @@ Generally speaking you will need to ask your users to add a `tsconfig.json` like
 
 The important part is the `include` and not `exclude` of your package name.
 
-For full TypeScript project you might want to do a little more like have 2 `tsconfigs.json` one for linting and one for buildling (as allowJs prevent automatic creation of definitino files).
+If you think that is a little complicated you are right. There [are ideas](https://github.com/Microsoft/TypeScript/issues/29824) to improve this flow however it seemed to not have gotten much attention lately - Give it your thumbs up and join the conversation.
+
+For full TypeScript project you might want to do a little more like have 2 `tsconfigs.json` one for linting and one for buildling (as allowJs prevent automatic creation of definition files).
 
 You can find more details about such an approach at [Setup For Typescript on Open Web Components](https://open-wc.org/developing/types.html#setup-for-typescript).
 
@@ -598,9 +600,14 @@ To see how your users will get it look at the [tests](https://github.com/daKmoR/
 
 ## What's next?
 
-These are steps that can help make web components simpler and saver to use.
-Not everything here is useful for every situation and there will be definitly situation where we don't have a recipe yet.
-If you encouter any issues (hopefully + solution) please let us know and we will add it to this "Cookbook for types with web components".
+- These are steps that can help make web components simpler and saver to use.
+- Not everything here is useful for every situation and there will be definitely situations where we don't have a recipe yet.
+- If you encounter any issues (hopefully + solution) please let us know and we will add it to this "Cookbook for types with web components".
+- VS Code is working on making a way to bring autocomplete to declarative html by having a definition for web components attribute - See the [proposal](https://github.com/w3c/webcomponents/issues/776) to allow for getting errors if undefined attributes are used:
+```
+<my-el undefined-attribute>
+```
+
 
 Follow me on [Twitter](https://twitter.com/daKmoR).
 If you have any interest in web component make sure to check out [open-wc.org](https://open-wc.org).
